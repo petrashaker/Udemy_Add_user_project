@@ -1,0 +1,15 @@
+.button {
+    background-color: darkblue;
+    color: whitesmoke;
+    border-radius: 5px;
+    padding: 10px 40px;
+    width: 200px;
+    margin: 20px 20px 20px 0px;
+    cursor: pointer;
+    font: inherit;  
+}
+
+.button:hover,
+.button:active {
+    background-color: rgba(0, 0, 255, 0.564);
+}   
