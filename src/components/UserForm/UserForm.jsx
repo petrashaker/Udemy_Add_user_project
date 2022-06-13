@@ -1,69 +1,87 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Card from "../UI/Card/Card";
-import styles from "./UserForm.module.css"
+import styles from "./UserForm.module.css";
 import Button from "../UI/Button/Button";
 import ErrorModal from "../UI/ErrorModal/ErrorModal";
 
-const UserForm = ({label, handleUsersData}) => {
-    const [enteredUsername, setEnteredUsername] = useState("");
-    const [enteredAge, setEnteredAge] = useState("");
-    const [error, setError] = useState();
+const UserForm = ({ label, handleUsersData }) => {
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+  const [error, setError] = useState();
 
-    const addUserHandler = (event) => {
-        event.preventDefault();
+  const addUserHandler = (event) => {
+    event.preventDefault();
 
-        if(enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
-            setError({
-                title: "Invalid input",
-                message: "Please enter a valid name and age (not empty values)."
-            });
-            return;
-        }
-        if(+enteredAge < 1) { //enteredAge is string, by using plus sign, we are assuring the enteredAge is taken as a number by JS
-            setError({
-                title: "Invalid age",
-                message: "Please enter a valid age (> 0)."
-            });
-            return;
-        }
+    const enteredName = nameInputRef.current.value;
+    const enteredAge = ageInputRef.current.value;
 
-        const users = {name: enteredUsername, age: enteredAge, id: Math.random().toString()};
-        handleUsersData(users);
-        setEnteredUsername("");
-        setEnteredAge("");
+    if (enteredName.trim().length === 0 || enteredAge.trim().length === 0) {
+      setError({
+        title: "Invalid input",
+        message: "Please enter a valid name and age (not empty values).",
+      });
+      return;
+    }
+    if (+enteredAge < 1) {
+      //enteredAge is string, by using plus sign, we are assuring the enteredAge is taken as a number by JS
+      setError({
+        title: "Invalid age",
+        message: "Please enter a valid age (> 0).",
+      });
+      return;
     }
 
-    const usernameChangeHandler = ({target}) => {
-        setEnteredUsername(target.value);
-    }
+    const users = {
+      name: enteredName,
+      age: enteredAge,
+      id: Math.random().toString(),
+    };
+    handleUsersData(users);
 
-    const ageChangeHandler = ({target}) => {
-        setEnteredAge(target.value);
-    }
+    //use this rarely to change the DOM, we can use useState as well to clear the input
+    nameInputRef.current.value = "";
+    ageInputRef.current.value = "";
+  };
 
-    const errorHandler = () => {
-        setError(null);
-    }
+  const errorHandler = () => {
+    setError(null);
+  };
 
-    return(
-        <>
-        {error && <ErrorModal title={error.title} message={error.message} onClick={errorHandler} />}
+  return (
+    <>
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onClick={errorHandler}
+        />
+      )}
 
-        <Card>
+      <Card>
         <form className={styles.flex} onSubmit={addUserHandler}>
-            <label className={styles.label} htmlFor="username">
-                User
-                <input id="username" type="text" className={styles.input} onChange={usernameChangeHandler} value={enteredUsername}/>
-            </label> 
-            <label className={styles.label} htmlFor="age">
-                    Age (Years)
-                <input id="age" type="number" className={styles.input} onChange={ageChangeHandler} value={enteredAge}/>
-            </label> 
-            <Button type="submit">Add User</Button>
+          <label className={styles.label} htmlFor="username">
+            User
+            <input
+              id="username"
+              type="text"
+              className={styles.input}
+              ref={nameInputRef}
+            />
+          </label>
+          <label className={styles.label} htmlFor="age">
+            Age (Years)
+            <input
+              id="age"
+              type="number"
+              className={styles.input}
+              ref={ageInputRef}
+            />
+          </label>
+          <Button type="submit">Add User</Button>
         </form>
-        </Card>
-        </>
-    )
+      </Card>
+    </>
+  );
 };
 
 export default UserForm;
